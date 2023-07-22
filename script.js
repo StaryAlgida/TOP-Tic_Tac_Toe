@@ -1,9 +1,45 @@
-function createImg(src, id){
+function createImg(src){
     const img = document.createElement("img");
     img.src = src;
-    img.setAttribute('id',id);
     return img;
 }
+
+const winRule = (()=>{
+
+    const findWinner = (gameBoard) =>{
+        let winnerRows = checkRows(gameBoard);
+        let winnerColumns;
+
+        return winnerRows
+    }
+
+    const checkTypeRows = (board, start, end) =>{
+        let xCounter = 0;
+        let oCounter = 0;
+
+        for(let i = start; i <= end; i++){
+            if(board[i] === 'X'){
+                xCounter++;
+                if(xCounter === 3) return 'X';
+            }
+            else if(board[i] === 'O'){
+                oCounter++;
+                if (oCounter === 3) return 'O';
+            }
+        }
+        return null;
+
+    }
+
+    const checkRows = (gameBoard) =>{
+        let winner;
+        if(((winner = checkTypeRows(gameBoard, 0, 2)) !== null) || ((winner = checkTypeRows(gameBoard, 3, 5)) !== null)|| ((winner = checkTypeRows(gameBoard, 6, 8)) !== null)){
+            return winner;
+        }
+        else return null;
+    };
+    return{findWinner};
+})();
 
 const game = (rounds) =>{
     let roundsCounter = 0;
@@ -14,13 +50,14 @@ const game = (rounds) =>{
     const player2Score = document.querySelector("#player2");
     
     const setType = () =>{
-        whoType = whoType === "X" ? "O" : "X";
+        whoType = whoType === 'X' ? 'O' : 'X';
     }
 
     const getWhoType = () => whoType;
+    const getRounds = () => rounds;
 
     const setScore = (winner) =>{
-        if(winner.getType === "X"){
+        if(winner.getType === 'X'){
             score[0]++;
         }
         else{
@@ -33,7 +70,9 @@ const game = (rounds) =>{
     };
     const setRound = () => roundsCounter++;
 
-    return{setScore, updateScore, setRound, setType, getWhoType};
+    const isWinner = (gameBoard) => winRule.findWinner(gameBoard);
+
+    return{setScore, updateScore, setRound, setType, getWhoType, getRounds, isWinner};
 }
 
 
@@ -44,8 +83,10 @@ const player = (type, img) =>{
     return {getType, getImg};
 };
 
-const player1 = player("X", "https://img.icons8.com/nolan/64/x.png");
-const player2 = player("O", "https://img.icons8.com/nolan/64/o.png");
+let gameBoard = new Array(9).fill(0);
+
+const player1 = player('X', "https://img.icons8.com/nolan/64/x.png");
+const player2 = player('O', "https://img.icons8.com/nolan/64/o.png");
 const newGame = game(2);
 
 const fileds = document.querySelectorAll(".field");
@@ -59,48 +100,42 @@ fileds.forEach(element =>{
         if(newGame.getWhoType() === "X" && element.counter === 0)
         {
             element.counter ++;
-            const img = createImg(player1.getImg(), "X");
+            const img = createImg(player1.getImg());
+            gameBoard[element.id] = 'X';
             element.appendChild(img);
+
+            round();
         }
         else if(element.counter === 0)
         {
             element.counter ++;
-            const img = createImg(player2.getImg(), "O");
+            const img = createImg(player2.getImg());
+            gameBoard[element.id] = 'O';
             element.appendChild(img);
+
+            round();
         }
-        round()
+        console.log(gameBoard);
+        
     });
 });
 
 function round(){
     moveCounter ++;
     newGame.setType();
-    // let winner = isWinner();
-    if(moveCounter === 9 || winner){
-        //check a winner
-        //clear the board
+    let winner = NaN;
+    
+    if(moveCounter >= 5){
         
+        winner = newGame.isWinner(gameBoard);
+        if(winner){
+            console.log(winner);
+            // console.log(winner);
+            //check a winner
+            //clear the board
+            
+        }
     }
+    
 }
 
-// function checkId(filed, mark){
-//     const child = filed.childNodes;
-//     console.log(`filed id = ${child[0].id}`);
-//     return filed.id === mark;
-// }
-
-// function isWinner(){
-//     checkRows("X");
-// }
-
-// function checkRows(mark){
-//     let counter = 0;
-//     for(let i=0; i<9; i++){
-//         if(checkId(fileds[i], mark)){
-//             counter++;
-//         }
-//         if(i%3===0 && counter === 3){
-//             return mark;
-//         }
-//     }
-// }
