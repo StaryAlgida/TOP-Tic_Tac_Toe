@@ -7,16 +7,20 @@ function createImg(src){
 const winRule = (()=>{
 
     const findWinner = (gameBoard) =>{
-        let winnerRows = checkRows(gameBoard);
-        let winnerColumns = checkColumns(gameBoard);
-
-        if(winnerRows){
+        let winnerRows;
+        let winnerColumns;
+        let winnerCorners;
+        if(winnerRows = checkRows(gameBoard)){
             console.log(`winnerRows ${winnerRows}`);
             return winnerRows;
         }
-        else if(winnerColumns){
+        else if(winnerColumns = checkColumns(gameBoard)){
             console.log(`winnerColumns ${winnerColumns}`);
             return winnerColumns;
+        }
+        else if(winnerCorners = checkCorners(gameBoard)){
+            console.log(`winnerCorners ${winnerCorners}`);
+            return winnerCorners;
         }
         else{
             return null;
@@ -56,6 +60,33 @@ const winRule = (()=>{
             }
         }
         return null;
+    }
+
+    const checkCornersType = (board, start, end, iterator) => {
+
+        let xCounter = 0;
+        let oCounter = 0;
+
+        for(let i = start;i <= end; i+=iterator){
+            if(board[i] === 'X'){
+                xCounter++;
+                if(xCounter === 3) return 'X';
+            }
+            else if(board[i] === 'O'){
+                oCounter++;
+                if (oCounter === 3) return 'O';
+            }
+        }
+        return null;
+    }
+
+    const checkCorners = (gameBoard)=>{
+        let winner;
+
+        if((winner = checkCornersType(gameBoard, 0, 8, 4)) !== null || (winner = checkCornersType(gameBoard, 2, 6, 2)) !== null){
+            return winner;
+        }
+        else return null;
     }
 
     const checkColumns = (gameBoard) =>{
