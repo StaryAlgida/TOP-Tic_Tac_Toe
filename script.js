@@ -8,9 +8,20 @@ const winRule = (()=>{
 
     const findWinner = (gameBoard) =>{
         let winnerRows = checkRows(gameBoard);
-        let winnerColumns;
+        let winnerColumns = checkColumns(gameBoard);
 
-        return winnerRows
+        if(winnerRows){
+            console.log(`winnerRows ${winnerRows}`);
+            return winnerRows;
+        }
+        else if(winnerColumns){
+            console.log(`winnerColumns ${winnerColumns}`);
+            return winnerColumns;
+        }
+        else{
+            return null;
+        }
+        
     }
 
     const checkTypeRows = (board, start, end) =>{
@@ -28,7 +39,33 @@ const winRule = (()=>{
             }
         }
         return null;
+    }
 
+    const checkTypeColumns = (board, start)=>{
+        let xCounter = 0;
+        let oCounter = 0;
+
+        for(let i = start; i <= start + 6; i += 3 ){
+            if(board[i] === 'X'){
+                xCounter++;
+                if(xCounter === 3) return 'X';
+            }
+            else if(board[i] === 'O'){
+                oCounter++;
+                if (oCounter === 3) return 'O';
+            }
+        }
+        return null;
+    }
+
+    const checkColumns = (gameBoard) =>{
+        let winner
+        for(let i = 0; i <= 3; i++){
+            if(winner = checkTypeColumns(gameBoard, i)){
+                return winner;
+            }
+        }
+        return null;
     }
 
     const checkRows = (gameBoard) =>{
@@ -97,7 +134,7 @@ fileds.forEach(element =>{
     element.counter = 0; 
     element.addEventListener('click',()=>{
 
-        if(newGame.getWhoType() === "X" && element.counter === 0)
+        if(newGame.getWhoType() === 'X' && element.counter === 0)
         {
             element.counter ++;
             const img = createImg(player1.getImg());
@@ -127,9 +164,7 @@ function round(){
     
     if(moveCounter >= 5){
         
-        winner = newGame.isWinner(gameBoard);
-        if(winner){
-            console.log(winner);
+        if(winner = newGame.isWinner(gameBoard)){
             // console.log(winner);
             //check a winner
             //clear the board
