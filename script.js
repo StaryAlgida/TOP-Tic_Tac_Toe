@@ -113,6 +113,7 @@ const game = (rounds) =>{
     let roundsCounter = 0;
     let score = [0,0];
     let whoType = "X"
+    let gameBoard = new Array(9).fill(0);
 
     const player1Score = document.querySelector("#player1");
     const player2Score = document.querySelector("#player2");
@@ -123,6 +124,9 @@ const game = (rounds) =>{
 
     const getWhoType = () => whoType;
     const getRounds = () => rounds;
+    const getBoard = () => gameBoard;
+
+    const updateBoard = (type, id) => gameBoard[id] = type;
 
     const setScore = (winner) =>{
         if(winner.getType === 'X'){
@@ -138,9 +142,9 @@ const game = (rounds) =>{
     };
     const setRound = () => roundsCounter++;
 
-    const isWinner = (gameBoard) => winRule.findWinner(gameBoard);
+    const isWinner = () => winRule.findWinner(gameBoard);
 
-    return{setScore, updateScore, setRound, setType, getWhoType, getRounds, isWinner};
+    return{setScore, updateScore, setRound, setType, getWhoType, getRounds, getBoard, isWinner, updateBoard};
 }
 
 
@@ -150,8 +154,6 @@ const player = (type, img) =>{
 
     return {getType, getImg};
 };
-
-let gameBoard = new Array(9).fill(0);
 
 const player1 = player('X', "https://img.icons8.com/nolan/64/x.png");
 const player2 = player('O', "https://img.icons8.com/nolan/64/o.png");
@@ -169,21 +171,19 @@ fileds.forEach(element =>{
         {
             element.counter ++;
             const img = createImg(player1.getImg());
-            gameBoard[element.id] = 'X';
+            newGame.updateBoard('X', element.id);
             element.appendChild(img);
-
             round();
         }
         else if(element.counter === 0)
         {
             element.counter ++;
             const img = createImg(player2.getImg());
-            gameBoard[element.id] = 'O';
+            newGame.updateBoard('O', element.id);
             element.appendChild(img);
-
             round();
         }
-        console.log(gameBoard);
+        console.log(newGame.getBoard());
         
     });
 });
@@ -191,14 +191,13 @@ fileds.forEach(element =>{
 function round(){
     moveCounter ++;
     newGame.setType();
-    let winner = NaN;
-    
+    let winner;
     if(moveCounter >= 5){
-        
-        if(winner = newGame.isWinner(gameBoard)){
-            // console.log(winner);
-            //check a winner
-            //clear the board
+        //check a winner
+        if(winner = newGame.isWinner()){
+            console.log(`winner: ${winner}`);
+            newGame.setRound();
+            
             
         }
     }
