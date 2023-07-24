@@ -1,6 +1,7 @@
 function createImg(src){
     const img = document.createElement("img");
     img.src = src;
+    img.classList.add('imgs');
     return img;
 }
 
@@ -109,8 +110,7 @@ const winRule = (()=>{
     return{findWinner};
 })();
 
-const game = (rounds) =>{
-    let roundsCounter = 0;
+const game = () =>{
     let score = [0,0];
     let whoType = "X"
     let gameBoard = new Array(9).fill(0);
@@ -123,16 +123,15 @@ const game = (rounds) =>{
     }
 
     const getWhoType = () => whoType;
-    const getRounds = () => rounds;
     const getBoard = () => gameBoard;
 
     const updateBoard = (type, id) => gameBoard[id] = type;
 
     const setScore = (winner) =>{
-        if(winner.getType === 'X'){
+        if(winner === 'X'){
             score[0]++;
         }
-        else{
+        else if (winner === 'O'){
             score[1]++;
         }
     };
@@ -140,11 +139,19 @@ const game = (rounds) =>{
         player1Score.innerText = score[0];
         player2Score.innerText = score[1];
     };
-    const setRound = () => roundsCounter++;
 
     const isWinner = () => winRule.findWinner(gameBoard);
 
-    return{setScore, updateScore, setRound, setType, getWhoType, getRounds, getBoard, isWinner, updateBoard};
+    const clearBoard = () =>{
+        gameBoard.fill(0);
+        document.querySelectorAll('.imgs').forEach((e)=>{
+            e.parentNode.removeChild(e);
+        });
+
+        whoType = "X";
+    } 
+
+    return{setScore, updateScore, setType, getWhoType, getBoard, isWinner, updateBoard, clearBoard};
 }
 
 
@@ -157,7 +164,7 @@ const player = (type, img) =>{
 
 const player1 = player('X', "https://img.icons8.com/nolan/64/x.png");
 const player2 = player('O', "https://img.icons8.com/nolan/64/o.png");
-const newGame = game(2);
+const newGame = game();
 
 const fileds = document.querySelectorAll(".field");
 
@@ -196,9 +203,40 @@ function round(){
         //check a winner
         if(winner = newGame.isWinner()){
             console.log(`winner: ${winner}`);
-            newGame.setRound();
             
+            //set and update score
+            newGame.setScore(winner);
+            newGame.updateScore();
+
+            //clear the borad
+            newGame.clearBoard();
+
+
+            //reste winner and fileds counter
+            winner = null;
+            fileds.forEach((e)=>{
+                e.counter = 0;
+            });
+
+            //reset move counter
+            moveCounter = 0;
             
+        }
+
+        else if(moveCounter === 9){
+            console.log(`Draw`);
+
+            //clear the borad
+            newGame.clearBoard();
+
+            //reste winner and fileds counter
+            winner = null;
+            fileds.forEach((e)=>{
+                e.counter = 0;
+            });
+
+            //reset move counter
+            moveCounter = 0;
         }
     }
     
