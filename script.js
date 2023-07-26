@@ -149,9 +149,15 @@ const game = () =>{
         });
 
         whoType = "X";
-    } 
+    }
 
-    return{setScore, updateScore, setType, getWhoType, getBoard, isWinner, updateBoard, clearBoard};
+    const resetScore = ()=>{
+        score.fill(0);
+        updateScore();
+        clearBoard();
+    }
+
+    return{setScore, updateScore, resetScore, setType, getWhoType, getBoard, isWinner, updateBoard, clearBoard};
 }
 
 
@@ -168,7 +174,15 @@ const newGame = game();
 
 const fileds = document.querySelectorAll(".field");
 
+const dialog = document.querySelector("#winner-dialog");
+const img = document.querySelector("#winner-img");
+const text = document.querySelector("#text");
+
+const nextRound = document.querySelector("#next-round");
+const restart = document.querySelector("#restart");
+
 let moveCounter = 0;
+let winner;
 
 fileds.forEach(element =>{
     element.counter = 0; 
@@ -195,48 +209,79 @@ fileds.forEach(element =>{
     });
 });
 
+function dialogCode(winnerImg, isWinner){
+    
+    dialog.showModal();
+    
+    if(isWinner){
+        img.src = winnerImg;
+        }
+    else{
+        text.innerText = "DRAW";
+    }
+    
+}
+
+nextRound.addEventListener('click',()=>{
+    if(winner){
+        //set and update score
+        newGame.setScore(winner);
+        newGame.updateScore();
+
+        //clear the borad
+        newGame.clearBoard();
+
+
+        // //reste winner and fileds counter
+        winner = null;
+        fileds.forEach((e)=>{
+            e.counter = 0;
+        });
+
+        // //reset move counter
+        moveCounter = 0; 
+    }
+    else{
+         //clear the borad
+         newGame.clearBoard();
+
+         //reste winner and fileds counter
+         winner = null;
+         fileds.forEach((e)=>{
+             e.counter = 0;
+         });
+
+         //reset move counter
+         moveCounter = 0;
+    }
+    dialog.close();
+    img.src = "";
+    text.innerText = "";
+});
+
+restart.addEventListener('click',()=>{
+    moveCounter = 0;
+    winner = null;
+    newGame.resetScore();
+    fileds.forEach((e)=>{
+        e.counter = 0;
+    });
+    dialog.close();
+});
+
 function round(){
     moveCounter ++;
     newGame.setType();
-    let winner;
     if(moveCounter >= 5){
         //check a winner
         if(winner = newGame.isWinner()){
             console.log(`winner: ${winner}`);
-            
-            //set and update score
-            newGame.setScore(winner);
-            newGame.updateScore();
-
-            //clear the borad
-            newGame.clearBoard();
-
-
-            //reste winner and fileds counter
-            winner = null;
-            fileds.forEach((e)=>{
-                e.counter = 0;
-            });
-
-            //reset move counter
-            moveCounter = 0;
-            
+            if(winner === 'X') dialogCode(player1.getImg(), true);
+            else dialogCode(player2.getImg(), true);
         }
-
         else if(moveCounter === 9){
+            dialogCode(null, false);
             console.log(`Draw`);
-
-            //clear the borad
-            newGame.clearBoard();
-
-            //reste winner and fileds counter
-            winner = null;
-            fileds.forEach((e)=>{
-                e.counter = 0;
-            });
-
-            //reset move counter
-            moveCounter = 0;
         }
     }
     
